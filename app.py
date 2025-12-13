@@ -26,7 +26,7 @@ def get_gemini_response(prompt, api_key_override=None):
     
     try:
         genai.configure(api_key=effective_key)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         return model.generate_content(prompt).text
     except Exception as e:
         # Auto-Trigger Modal on Error
