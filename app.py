@@ -95,7 +95,6 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap');
 
     /* ATMOSPHERE: The Misty Forest */
-    /* ATMOSPHERE: The Misty Forest */
     .stApp {
         background-color: transparent; /* Changed from #111827 to let image show */
         font-family: 'Plus Jakarta Sans', sans-serif;
@@ -131,7 +130,7 @@ st.markdown("""
         z-index: -2;
     }
 
-    /* WIZARD CARD */
+    /* WIZARD CARD - RESPONSIVE */
     .wizard-card {
         background: rgba(30, 41, 59, 0.7);
         backdrop-filter: blur(20px);
@@ -152,8 +151,6 @@ st.markdown("""
         backdrop-filter: blur(20px);
         border-radius: 20px !important;
     }
-    
-    /* ANIMATION CONTAINER */
     
     /* ANIMATION CONTAINER */
     .nature-anim {
@@ -191,18 +188,47 @@ st.markdown("""
         border-radius: 12px;
     }
 
-    /* SIDEBAR WIDTH */
-    section[data-testid="stSidebar"] {
-        width: 400px !important;
+    /* --- RESPONSIVE ADJUSTMENTS --- */
+    
+    /* DESKTOP ONLY: Fixed Sidebar */
+    @media (min-width: 992px) {
+        section[data-testid="stSidebar"] {
+            width: 400px !important;
+        }
+    }
+
+    /* MOBILE/TABLET ADJUSTMENTS (< 768px) */
+    @media (max-width: 768px) {
+        /* Maximize Content Area */
+        .block-container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            max-width: 100vw !important;
+        }
+
+        /* Adjust Wizard Card */
+        .wizard-card {
+            padding: 20px;
+            width: 95%;
+            margin-top: 20px;
+        }
+
+        /* Typography Scaling */
+        h1 { font-size: 1.8rem !important; }
+        h2 { font-size: 1.5rem !important; }
+        h3 { font-size: 1.2rem !important; }
+        
+        div.stButton > button {
+            padding: 12px 24px;
+            font-size: 1rem;
+        }
     }
     
-    /* MAXIMIZE CONTENT AREA */
+    /* MAXIMIZE CONTENT AREA (Default) */
     .block-container {
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
-        max-width: 95vw !important;
+        /* Side padding handled by media query above for mobile */
     }
 
     section[data-testid="stSidebar"] div.stButton > button {
@@ -258,6 +284,7 @@ if st.session_state.show_api_modal:
                 
                 st.markdown("Unlock unlimited usage by providing your own Google Gemini API Key.")
                 st.markdown("1. Get a [Free Key Here](https://aistudio.google.com/api-keys)\n2. Paste it below.")
+                st.caption("✨ If you don't want to use your API key, please come back tomorrow at 1:30 PM.")
                 
                 new_key = st.text_input("API Key", type="password", placeholder="paste-your-key-here...", label_visibility="collapsed")
                 
