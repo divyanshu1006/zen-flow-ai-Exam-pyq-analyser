@@ -346,6 +346,10 @@ if st.session_state.step >= 4:
                 del st.session_state[key]
             st.rerun()
 
+        st.divider()
+        st.caption("🔍 Found a bug or have a suggestion?")
+        st.link_button("Give Feedback 📝", "https://docs.google.com/forms/d/e/1FAIpQLSfPBNYfR5SpRF_1K9W-e7Ya8x5QJeXy5Ytg93AMhMHNomzt_w/viewform?usp=publish-editor", use_container_width=True)
+
 # --- 5. THE WIZARD FLOW ---
 
 # STEP 0: NAME ENTRY (The Portal)
@@ -648,6 +652,11 @@ elif st.session_state.step == 4:
                             st.error("Simulation Glitch. Please retry to re-calibrate.")
             else:
                 st.warning("⚠️ Please upload PYQs above first!")
+    
+    # FEEDBACK SECTION (Main Dashboard)
+    st.divider()
+    st.caption("✨ Help us improve ZenFlow! Report bugs or request features.")
+    st.link_button("Give Feedback 📝", "https://docs.google.com/forms/d/e/1FAIpQLSfPBNYfR5SpRF_1K9W-e7Ya8x5QJeXy5Ytg93AMhMHNomzt_w/viewform?usp=publish-editor", use_container_width=True)
 
 # STEP 5: ROADMAP RESULT VIEW
 elif st.session_state.step == 5:
