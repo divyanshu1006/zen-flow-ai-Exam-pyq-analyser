@@ -3,3 +3,4 @@
 .venv/
 __pycache__/
 .zenflow_state.json
+.zenflow_history.json
