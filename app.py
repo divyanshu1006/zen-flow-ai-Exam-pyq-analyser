@@ -12,7 +12,7 @@ load_dotenv() # Load environment variables
 
 # --- 1. PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="ZenFlow: Focus Sanctuary",
+    page_title="ZenFlow AI",
     page_icon="🌿",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -220,7 +220,8 @@ st.markdown("""
         transition: transform 0.2s;
     }
     div.stButton > button:hover {
-        transform: scale(1.02);
+        /* transform: scale(1.02); REMOVED to avoid "loading" confusion */
+        opacity: 0.9;
     }
 
     /* INPUT STYLING */
@@ -284,7 +285,7 @@ st.markdown("""
         background-color: #10B981;
         border-color: #10B981;
         color: white;
-        transform: translateY(-2px);
+        /* transform: translateY(-2px); REMOVED */
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
 
@@ -369,8 +370,35 @@ if st.session_state.step >= 1:
 
         st.caption("Track, Edit, or Delete your knowledge base.")
         
-        # SYLLABUS VAULT
+        # Initialize dynamic key for uploader clearing
+        if "uploader_key" not in st.session_state:
+            st.session_state.uploader_key = 0
+
         st.markdown("### 📜 Syllabus")
+        
+        # Sidebar Syllabus Upload
+        with st.expander("📤 Add Syllabus"):
+            s_up = st.file_uploader("Upload PDF/Img", type=["pdf", "png", "jpg"], accept_multiple_files=True, key=f"sb_syl_up_{st.session_state.uploader_key}")
+            if s_up:
+                s_updated = False
+                for f in s_up:
+                    # Use filename as key to prevent overwrites and infinite loops
+                    if f.name not in st.session_state.syllabus_files:
+                        if f.type == "application/pdf":
+                            st.session_state.syllabus_files[f.name] = extract_text([f])
+                            s_updated = True
+                        elif f.type in ["image/png", "image/jpeg", "image/jpg"]:
+                            st.session_state.syllabus_files[f.name] = extract_text_from_images([f])
+                            s_updated = True
+                
+                if s_updated:
+                    st.success("New Syllabus Added!")
+                    # Reset uploader to prevent duplication loops
+                    st.session_state.uploader_key += 1
+                    save_state()
+                    time.sleep(1)
+                    st.rerun()
+
         if not st.session_state.syllabus_files:
             st.info("No syllabus data loaded.")
         else:
@@ -398,6 +426,8 @@ if st.session_state.step >= 1:
                 del st.session_state[key]
             st.rerun()
 
+
+        
         # HISTORY VAULT
         st.divider()
         st.markdown("### 🕰️ Time Capsule")
@@ -406,17 +436,16 @@ if st.session_state.step >= 1:
              st.caption("No past strategies found.")
         else:
             for idx, item in enumerate(history):
-                # Use a unique key for each expander
+                # Use a unique key for each item
                 timestamp = item.get("timestamp", "Unknown Date")
                 summary = item.get("summary", "Strategy")
                 
-                with st.expander(f"📅 {timestamp}\n({summary})"):
-                    st.markdown(item.get("roadmap", ""))
-                    if st.button("Load to Main View", key=f"hist_load_{idx}"):
-                        st.session_state.roadmap = item.get("roadmap", "")
-                        st.session_state.step = 5
-                        save_state()
-                        st.rerun()
+                # Direct Load Button
+                if st.button(f"📅 {timestamp} | {summary}", key=f"hist_btn_{idx}", use_container_width=True):
+                    st.session_state.roadmap = item.get("roadmap", "")
+                    st.session_state.step = 5
+                    save_state()
+                    st.rerun()
 
         st.divider()
         st.caption("🔍 Found a bug or have a suggestion?")
@@ -431,6 +460,7 @@ if st.session_state.step == 0:
     st.markdown("<h1 style='text-align: center; margin-top: -20px;'>Enter the Sanctuary</h1>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center; color: #A7F3D0; font-weight: 300;'>The AI-Powered Exam Strategist<br><span style='font-size: 0.7em; color: #6EE7B7; font-weight: 400;'>✨ Optimized for University Examinations</span></h3>", unsafe_allow_html=True)
     
+    
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
         with st.form("name_form"):
@@ -441,6 +471,33 @@ if st.session_state.step == 0:
                     st.session_state.step = 1
                     save_state()
                     st.rerun()
+
+    st.divider()
+    st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True)
+
+    # 3-Step Process
+    c_step1, c_step2, c_step3 = st.columns(3)
+    
+    with c_step1:
+        st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; margin-bottom: 0;'>📂</h1>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center; color: #E2E8F0;'>Step 1: Upload</h4>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 0.9em; color: #CBD5E1;'>Upload your past exam PDF files.</p>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with c_step2:
+        st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; margin-bottom: 0;'>🤖</h1>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center; color: #E2E8F0;'>Step 2: Analyze</h4>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 0.9em; color: #CBD5E1;'>AI scans the questions to find patterns.</p>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with c_step3:
+        st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; margin-bottom: 0;'>📊</h1>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center; color: #E2E8F0;'>Step 3: Score</h4>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 0.9em; color: #CBD5E1;'>Get insights on high-weightage topics.</p>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # STEP 1: SYLLABUS INPUT (The Foundation)
 elif st.session_state.step == 1:
@@ -521,20 +578,20 @@ elif st.session_state.step == 4:
     h_col1, h_col2, h_col3 = st.columns([1, 8, 1])
     
     with h_col2:
-         st.markdown(f"""
-        <div style='text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;'>
-            <div style='background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 16px; border-radius: 20px; margin-bottom: 10px;'>
-                 <span style='color: #6EE7B7; font-size: 0.8rem; letter-spacing: 2px; font-weight: 600; text-transform: uppercase;'>ZenFlow AI • PYQ Analyzer</span>
-            </div>
-            <h2 style='margin-bottom: 0px;'>
-                <span style='color: #FFFFFF;'>HELLO</span> 
-                <span style='background: linear-gradient(90deg, #10B981, #34D399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>
-                    {st.session_state.user_name}
-                </span>
-            </h2>
-            <h1 style='margin-top: -10px; font-weight: 600;'>Study What Actually Matters</h1>
+        st.markdown(f"""
+        <div style='text-align: center; margin-bottom: 20px;'>
+            <h1 style='color: #FFFFFF; font-weight: 700; margin-bottom: 0px;'>ZenFlow Exam Analyser</h1>
+            <p style='color: #A7F3D0; font-size: 1.1rem;'>Upload your Past Year Questions (PYQs) to find repeated topics and difficulty trends.</p>
         </div>
         """, unsafe_allow_html=True)
+        
+        with st.expander("How to use this tool"):
+            st.markdown("""
+            *   Upload your exam PDF.
+            *   Wait for the AI to extract questions.
+            *   Click on 'Start Analysis'.
+            *   View the topic breakdown and difficulty analysis below.
+            """)
         
     with h_col3:
         st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True) # Vertical align fix
@@ -632,10 +689,12 @@ elif st.session_state.step == 4:
     with m1:
         has_pyq = bool(st.session_state.pyq_files)
         
-        if has_pyq or st.session_state.force_roadmap:
-            btn_label = "Generate Precision Roadmap 🎯" if has_pyq else "Generate Basic Roadmap ⚠️"
-            if st.button(btn_label, use_container_width=True, key="btn_gen_roadmap"):
-                with st.spinner("Triangulating Critical Path..."):
+        # MERGED LOGIC: Single Button always visible
+        btn_label = "Start Analysis 🎯" if has_pyq else "Start Basic Analysis ⚠️"
+        
+        if st.button(btn_label, use_container_width=True, key="btn_gen_roadmap"):
+                with st.spinner("🌿 Analyzing..."):
+                    time.sleep(2)
                     full_syllabus = "\n".join(st.session_state.syllabus_files.values())
                     full_pyqs = "\n".join(st.session_state.pyq_files.values())
                     context = f"Syllabus: {full_syllabus[:15000]}"
@@ -658,57 +717,45 @@ elif st.session_state.step == 4:
                     TASK 1: Generate a Unit-Wise Strategy (Must Do Questions).
                     TASK 2: Create a Daily Timetable blending the 'Must Do' questions into the {days}-Day schedule.
                     
-                    STRICT OUTPUT FORMAT:
+                    STRICT OUTPUT FORMAT (JSON ONLY):
                     
-                    # 🗺️ Strategic Roadmap
-                    
-                    ## Part 1: Unit-Wise Priority
-                    (Repeat for all units in syllabus)
-                    ### Unit [N]: [Name]
-                    **🔥 Must Do Questions (Top 4-5):**
-                    1. [Direct Question 1]
-                    2. [Direct Question 2]
-                    ...
-                    
-                    **⚠️ Topics You Can Skip (Low Yield):**
-                    - [Topic 1]
-                    ...
-
-                    ---
-                    ## Part 2: 📅 {days}-Day Execution Plan (Structured Timetable)
-                    Distribute the 'Must Do' questions smartly across the available days.
-                    
-                    **Day 1:**
-                    - [Hour 1-{hours//2}]: [Unit X: Focus Topic]
-                    - [Hour {hours//2}-{hours}]: [Unit X: Practice Q1, Q2]
-                    
-                    (...)
-                    
-                    **Day {days}:**
-                    - Final Revision & Mock Tests
+                    {{
+                        "units": [
+                            {{
+                                "unit_name": "Unit 1: [Name]",
+                                "analysis": "Markdown Content for this unit (Must Do Questions, Skip Topics...)"
+                            }},
+                            ...
+                        ],
+                        "timetable": "Markdown Content for the Daily Timetable..."
+                    }}
                     """
                     st.session_state.roadmap = get_gemini_response(prompt)
                     
                     if st.session_state.roadmap:
+                        # Attempt to sanitize JSON if it has backticks
+                        raw = st.session_state.roadmap
+                        if "```json" in raw:
+                            raw = raw.split("```json")[1].split("```")[0]
+                        elif "```" in raw:
+                            raw = raw.split("```")[1].split("```")[0]
+                        st.session_state.roadmap = raw.strip()
+
                         # SAVE TO HISTORY
                         save_strategy_history(st.session_state.roadmap, days, hours)
                         
                         st.session_state.step = 5 # Go to Result View
                         save_state()
                         st.rerun()
-        else:
-            st.button("Generate Precision Roadmap 🎯", disabled=True, help="Upload PYQs first!", use_container_width=True, key="btn_gen_roadmap_disabled")
-            if st.button("Proceed without PYQs?", use_container_width=True, key="btn_force_roadmap"):
-                st.warning("⚠️ SPOILER: Uploading last 4 years' PYQs increases probability by 90%!")
-                st.session_state.force_roadmap = True
-                st.rerun()
+
 
     # RIGHT COLUMN: SIMULATION
     with m2:
         if st.button("Mock Exam (95% Accuracy) 🎯", use_container_width=True, key="btn_start_sim"):
             if st.session_state.pyq_files:
                 full_pyqs = "\n".join(st.session_state.pyq_files.values()) # Ensure defined
-                with st.spinner("Fabricating High-Accuracy Mock Deck..."):
+                with st.spinner("🌿 Analyzing..."):
+                    time.sleep(2)
                     prompt = f"""
                     Role: Exact Exam Predictor.
                     Task: Generate exactly 20 Mock Exam Questions STRICTLY based on the provided PYQ data. 
@@ -774,7 +821,26 @@ elif st.session_state.step == 5:
     st.markdown("""
     <div class='zen-card' style='background: rgba(0,0,0,0.4); margin-top: 20px;'>
     """, unsafe_allow_html=True)
-    st.markdown(st.session_state.roadmap)
+    
+    try:
+        data = json.loads(st.session_state.roadmap)
+        
+        # 1. UNITS (Expanders)
+        st.markdown("## 🔍 Unit-Wise Deep Dive")
+        for unit in data.get("units", []):
+            with st.expander(f"📌 {unit.get('unit_name', 'Unit')}"):
+                st.markdown(unit.get("analysis", ""))
+        
+        # 2. TIMETABLE (Visible)
+        st.markdown("---")
+        st.markdown("## 📅 The Protocol")
+        st.markdown(data.get("timetable", ""))
+        
+    except json.JSONDecodeError:
+        # Fallback for old data or errors
+        st.warning("⚠️ Legacy Format Detected")
+        st.markdown(st.session_state.roadmap)
+        
     st.markdown("</div>", unsafe_allow_html=True)
 
 # STEP 6: CARD RUNNER UI (The Gauntlet)
