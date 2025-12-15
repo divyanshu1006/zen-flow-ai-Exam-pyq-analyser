@@ -2,6 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 from PyPDF2 import PdfReader
 import time
+import datetime
 import json
 import os
 from dotenv import load_dotenv
@@ -44,6 +45,36 @@ def extract_text(files):
                 text += page.extract_text() or ""
         except: pass
     return text
+
+def save_strategy_history(roadmap_text, days, hours):
+    history_file = ".zenflow_history.json"
+    entry = {
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "roadmap": roadmap_text,
+        "summary": f"{days} Days • {hours} Hrs/Day"
+    }
+    
+    history_data = []
+    if os.path.exists(history_file):
+        try:
+            with open(history_file, "r") as f:
+                history_data = json.load(f)
+        except: pass
+    
+    # Prepend new entry
+    history_data.insert(0, entry)
+    
+    with open(history_file, "w") as f:
+        json.dump(history_data, f)
+
+def load_strategy_history():
+    history_file = ".zenflow_history.json"
+    if os.path.exists(history_file):
+        try:
+            with open(history_file, "r") as f:
+                return json.load(f)
+        except: return []
+    return []
 
 def save_state():
     state_data = {
@@ -346,6 +377,26 @@ if st.session_state.step >= 4:
                 del st.session_state[key]
             st.rerun()
 
+        # HISTORY VAULT
+        st.divider()
+        st.markdown("### 🕰️ Time Capsule")
+        history = load_strategy_history()
+        if not history:
+             st.caption("No past strategies found.")
+        else:
+            for idx, item in enumerate(history):
+                # Use a unique key for each expander
+                timestamp = item.get("timestamp", "Unknown Date")
+                summary = item.get("summary", "Strategy")
+                
+                with st.expander(f"📅 {timestamp}\n({summary})"):
+                    st.markdown(item.get("roadmap", ""))
+                    if st.button("Load to Main View", key=f"hist_load_{idx}"):
+                        st.session_state.roadmap = item.get("roadmap", "")
+                        st.session_state.step = 5
+                        save_state()
+                        st.rerun()
+
         st.divider()
         st.caption("🔍 Found a bug or have a suggestion?")
         st.link_button("Give Feedback 📝", "https://docs.google.com/forms/d/e/1FAIpQLSfPBNYfR5SpRF_1K9W-e7Ya8x5QJeXy5Ytg93AMhMHNomzt_w/viewform?usp=publish-editor", use_container_width=True)
@@ -598,10 +649,14 @@ elif st.session_state.step == 4:
                     - Final Revision & Mock Tests
                     """
                     st.session_state.roadmap = get_gemini_response(prompt)
+                    
                     if st.session_state.roadmap:
-                         st.session_state.step = 5 # Go to Result View
-                         save_state()
-                         st.rerun()
+                        # SAVE TO HISTORY
+                        save_strategy_history(st.session_state.roadmap, days, hours)
+                        
+                        st.session_state.step = 5 # Go to Result View
+                        save_state()
+                        st.rerun()
         else:
             st.button("Generate Precision Roadmap 🎯", disabled=True, help="Upload PYQs first!", use_container_width=True, key="btn_gen_roadmap_disabled")
             if st.button("Proceed without PYQs?", use_container_width=True, key="btn_force_roadmap"):
