@@ -1,6 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 from PyPDF2 import PdfReader
+from PIL import Image
 import time
 import datetime
 import json
@@ -43,6 +44,17 @@ def extract_text(files):
             reader = PdfReader(f)
             for page in reader.pages:
                 text += page.extract_text() or ""
+        except: pass
+    return text
+
+def extract_text_from_images(files):
+    text = ""
+    for f in files:
+        try:
+            image = Image.open(f)
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            response = model.generate_content(["Extract all text from this syllabus page verbatim:", image])
+            text += response.text + "\n"
         except: pass
     return text
 
@@ -343,9 +355,18 @@ if st.session_state.show_api_modal:
 
 
 # --- COMPONENT: DATA VAULT SIDEBAR ---
-if st.session_state.step >= 4:
+if st.session_state.step >= 1:
     with st.sidebar:
         st.markdown("## 🗄️ Data Vault")
+        if st.button("➕ New Session", key="sb_new_chat", use_container_width=True):
+             st.session_state.step = 1
+             st.session_state.syllabus_files = {}
+             st.session_state.pyq_files = {}
+             st.session_state.roadmap = ""
+             st.session_state.mock_json = []
+             save_state()
+             st.rerun()
+
         st.caption("Track, Edit, or Delete your knowledge base.")
         
         # SYLLABUS VAULT
@@ -408,7 +429,7 @@ if st.session_state.step == 0:
     st.markdown("<div style='height: 15vh'></div>", unsafe_allow_html=True)
         
     st.markdown("<h1 style='text-align: center; margin-top: -20px;'>Enter the Sanctuary</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center; color: #A7F3D0; font-weight: 300;'>The AI-Powered Exam Strategist</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: #A7F3D0; font-weight: 300;'>The AI-Powered Exam Strategist<br><span style='font-size: 0.7em; color: #6EE7B7; font-weight: 400;'>✨ Optimized for University Examinations</span></h3>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
@@ -442,11 +463,20 @@ elif st.session_state.step == 1:
     # Note: In Step 1 we just want to GET data. We'll store it in the dict on 'Confirm'.
     
     with col_pdf:
-        st.markdown("### 📂 PDF Upload")
-        s_file = st.file_uploader("Upload Syllabus PDF", type=["pdf"])
-        if s_file:
-            text = extract_text([s_file])
-            new_pdf_data[s_file.name] = text
+        st.markdown("### 📂 Upload Syllabus")
+        s_files = st.file_uploader("Upload PDF/Images", type=["pdf", "png", "jpg", "jpeg"], accept_multiple_files=True)
+        if s_files:
+            pdf_files = [f for f in s_files if f.type == "application/pdf"]
+            img_files = [f for f in s_files if f.type in ["image/png", "image/jpeg"]]
+            
+            if pdf_files:
+                text = extract_text(pdf_files)
+                new_pdf_data["PDFs"] = text
+            
+            if img_files:
+                with st.spinner("👀 Reading Images..."):
+                    img_text = extract_text_from_images(img_files)
+                    new_pdf_data["Images"] = img_text
     
     with col_text:
         st.markdown("### 📝 Text / YT Summary")
@@ -509,6 +539,15 @@ elif st.session_state.step == 4:
     with h_col3:
         st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True) # Vertical align fix
         # Settings Button
+        if st.button("↻ New", help="Start Over"):
+             st.session_state.step = 1
+             st.session_state.syllabus_files = {}
+             st.session_state.pyq_files = {}
+             st.session_state.roadmap = ""
+             st.session_state.mock_json = []
+             save_state()
+             st.rerun()
+
         if st.button("🔑", help="Configure API Key"):
             st.session_state.show_api_modal = True
             st.rerun()
