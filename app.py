@@ -6,6 +6,7 @@ import time
 import datetime
 import json
 import os
+import html
 from dotenv import load_dotenv
 
 load_dotenv() # Load environment variables
@@ -502,7 +503,7 @@ if st.session_state.step == 0:
 # STEP 1: SYLLABUS INPUT (The Foundation)
 elif st.session_state.step == 1:
     st.markdown("<div style='height: 10vh'></div>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='text-align: center; margin-bottom: 20px;'>WELCOME, {st.session_state.user_name}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align: center; margin-bottom: 20px;'>WELCOME, {html.escape(st.session_state.user_name)}</h2>", unsafe_allow_html=True)
     
     st.markdown("""
     <div class='wizard-card'>
@@ -922,13 +923,17 @@ elif st.session_state.step == 6:
     anim_class = "anim-up" if st.session_state.get('anim_dir') == 'next' else "anim-down"
     
     # CARD DISPLAY
+    tags_html = html.escape(' / '.join(current_q.get('tags', [])))
+    marks_html = html.escape(str(current_q.get('marks', 'Unknown')))
+    q_html = html.escape(str(current_q.get('q', 'Error')))
+
     st.markdown(f"""
     <div class='q-card {anim_class}'>
         <div>
-            <span class='q-badge'>{' / '.join(current_q.get('tags', []))}</span>
-            <span class='mark-badge'>{current_q.get('marks', 'Unknown')}</span>
+            <span class='q-badge'>{tags_html}</span>
+            <span class='mark-badge'>{marks_html}</span>
         </div>
-        <h2 style='margin-top: 20px; font-size: 1.8rem;'>{current_q.get('q', 'Error')}</h2>
+        <h2 style='margin-top: 20px; font-size: 1.8rem;'>{q_html}</h2>
     </div>
     """, unsafe_allow_html=True)
     
