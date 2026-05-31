@@ -1,6 +1,40 @@
+# Dependencies
+node_modules/
+server/node_modules/
 
+# Build output
+dist/
+
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python venv (from old Streamlit version)
 .venv/
-__pycache__/
-.zenflow_state.json
-.zenflow_history.json
+
+# Uploaded files
+server/uploads/
+
+# Test/temp files
+test.pdf
+server/temp.txt
+server/test.txt
+server/test_upload.txt
+server/test_pdf.pdf
+server/test*.mjs
+server/test*.cjs
+server/eng.traineddata
+eng.traineddata
+
+# Logs
+*.log
+npm-debug.log*

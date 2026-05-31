@@ -1,0 +1,17 @@
+{
+  "name": "zenflow-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@google/genai": "^2.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.0.1",
+    "multer": "^1.4.5-lts.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.6.205"
+  }
+}

@@ -1,0 +1,278 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "./styles/theme.css";
+
+/* === Base Resets === */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #FFFFFF;
+  color: #000000;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* === Typography === */
+.font-display {
+  font-family: 'Instrument Serif', serif;
+}
+
+.font-body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* === Selection === */
+::selection {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: #000000;
+}
+
+/* === Focus Styles === */
+:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+
+/* === Page transition === */
+.page-enter {
+  animation: fade-rise 0.5s ease-out forwards;
+}
+
+/* === Markdown Content Styling === */
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.78rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.markdown-content thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.markdown-content th {
+  background: rgba(0, 0, 0, 0.04);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: #444;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+
+.markdown-content td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  color: #333;
+  vertical-align: top;
+}
+
+.markdown-content tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.markdown-content tr:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.markdown-content li {
+  margin: 0.3rem 0;
+  line-height: 1.7;
+}
+
+.markdown-content li::marker {
+  color: #bbb;
+}
+
+.markdown-content h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 1.5rem 0 0.5rem;
+  letter-spacing: -0.2px;
+}
+
+.markdown-content h4 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #333;
+  margin: 1.25rem 0 0.4rem;
+}
+
+.markdown-content p {
+  margin: 0.5rem 0;
+  line-height: 1.7;
+}
+
+.markdown-content strong {
+  font-weight: 650;
+  color: #111;
+}
+
+.markdown-content em {
+  font-style: italic;
+  color: #555;
+}
+
+.markdown-content hr {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  margin: 1.5rem 0;
+}
+
+.markdown-content code {
+  background: rgba(0, 0, 0, 0.04);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.markdown-content pre {
+  background: rgba(0, 0, 0, 0.04);
+  padding: 1rem;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.markdown-content blockquote {
+  border-left: 3px solid rgba(99, 102, 241, 0.3);
+  padding: 0.5rem 1rem;
+  margin: 0.75rem 0;
+  background: rgba(99, 102, 241, 0.03);
+  border-radius: 0 10px 10px 0;
+  color: #555;
+  font-size: 0.82rem;
+}
+
+.markdown-content input[type="checkbox"] {
+  margin-right: 0.5rem;
+  accent-color: #000;
+}
+
+/* === Kanban Board === */
+.kanban-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+.kanban-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.kanban-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0 1rem;
+}
+
+.kanban-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+
+.kanban-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Card hover */
+.kanban-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.1) !important;
+}
+
+/* Card body scrollbar */
+.kanban-card-body::-webkit-scrollbar {
+  width: 3px;
+}
+
+.kanban-card-body::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.08);
+  border-radius: 2px;
+}
+
+/* Snap each card */
+.kanban-card {
+  scroll-snap-align: start;
+}
+
+/* === Modal Animations === */
+@keyframes modal-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* === Responsive: stack cards vertically on mobile === */
+@media (max-width: 768px) {
+  .kanban-scroll {
+    flex-direction: column !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .kanban-card {
+    min-width: 100% !important;
+    max-width: 100% !important;
+    scroll-snap-align: none;
+  }
+}
+
