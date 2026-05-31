@@ -3,11 +3,12 @@ import { useState, useRef, type DragEvent } from 'react'
 interface FileUploaderProps {
   onFileSelected: (file: File) => void
   isUploading: boolean
+  disabled?: boolean
 }
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
 
-export default function FileUploader({ onFileSelected, isUploading }: FileUploaderProps) {
+export default function FileUploader({ onFileSelected, isUploading, disabled = false }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
@@ -28,6 +29,7 @@ export default function FileUploader({ onFileSelected, isUploading }: FileUpload
 
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault()
+    if (disabled) return
     setIsDragging(true)
   }
 
@@ -38,6 +40,7 @@ export default function FileUploader({ onFileSelected, isUploading }: FileUpload
 
   const handleDrop = (e: DragEvent) => {
     e.preventDefault()
+    if (disabled) return
     setIsDragging(false)
     setFileError(null)
 
@@ -112,8 +115,8 @@ export default function FileUploader({ onFileSelected, isUploading }: FileUpload
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => inputRef.current?.click()}
-        className="relative cursor-pointer rounded-2xl transition-all duration-300"
+        onClick={() => { if (!disabled) inputRef.current?.click() }}
+        className={`relative rounded-2xl transition-all duration-300 ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
         style={{
           border: `2px dashed ${isDragging ? '#000000' : fileError ? 'rgba(220, 38, 38, 0.3)' : 'rgba(0,0,0,0.15)'}`,
           backgroundColor: isDragging ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.6)',

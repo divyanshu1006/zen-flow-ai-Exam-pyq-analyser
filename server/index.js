@@ -6,6 +6,8 @@ import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import path from 'path'
 import fs from 'fs'
+import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: path.join(__dirname, '..', '.env') })
@@ -317,8 +319,38 @@ For every unit, analyze questions that appeared **only once** and find the exami
 const app = express()
 const PORT = 3001
 
-app.use(cors())
+// Trust proxy for rate limiting behind reverse proxies (Render, Heroku, etc.)
+app.set('trust proxy', 1)
+
+// Security headers
+app.use(helmet())
+
+// Restrict CORS
+const allowedOrigins = [
+  'https://zenflowaidiv.netlify.app',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173'
+]
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}))
+
 app.use(express.json())
+
+// Daily rate limiting for analysis
+const analyzeLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 2, // Limit each IP to 2 requests per `window` (here, per day)
+  message: { error: 'Daily limit reached', message: 'You have used both of your free analyses for today. Your limit resets at midnight.' },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads')
@@ -418,7 +450,7 @@ async function splitPDFIntoChunks(pdfPath, tempDir, originalSize) {
 }
 
 // === ANALYSIS ENDPOINT ===
-app.post('/api/analyze', (req, res, next) => {
+app.post('/api/analyze', analyzeLimiter, (req, res, next) => {
   upload.single('pdf')(req, res, (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
@@ -651,7 +683,9 @@ app.post('/api/analyze', (req, res, next) => {
     if (err?.status === 429 || err?.message?.includes('429')) {
       return res.status(429).json({ error: 'RATE_LIMITED', message: 'AI service is busy. Wait 30–60 seconds and try again.' })
     }
-    return res.status(500).json({ error: 'ANALYSIS_FAILED', message: err.message || 'Analysis failed.' })
+    
+    // Do not leak stack traces or internal messages in production
+    return res.status(500).json({ error: 'ANALYSIS_FAILED', message: 'An internal server error occurred during analysis.' })
   }
 })
 

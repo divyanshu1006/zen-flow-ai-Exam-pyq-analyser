@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 import VideoBackground from '../components/VideoBackground'
 import FileUploader from '../components/FileUploader'
 import AnalysisResults from '../components/AnalysisResults'
+import LimitBar from '../components/LimitBar'
 
 // In production, VITE_API_URL points to the Render backend.
 // In dev, it's empty so the Vite proxy handles /api → localhost:3001.
@@ -13,6 +14,32 @@ export default function Upload() {
   const [error, setError] = useState<string | null>(null)
   const [analysisResult, setAnalysisResult] = useState<string | null>(null)
   const [serverOnline, setServerOnline] = useState<boolean | null>(null)
+  const [usageCount, setUsageCount] = useState(0)
+
+  // === Daily Limit check on mount ===
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]
+    const storedStr = localStorage.getItem('zenflow_daily_limit')
+    
+    if (storedStr) {
+      try {
+        const stored = JSON.parse(storedStr)
+        if (stored.date === today) {
+          setUsageCount(stored.count)
+        } else {
+          // New day, reset
+          localStorage.setItem('zenflow_daily_limit', JSON.stringify({ count: 0, date: today }))
+          setUsageCount(0)
+        }
+      } catch {
+        localStorage.setItem('zenflow_daily_limit', JSON.stringify({ count: 0, date: today }))
+        setUsageCount(0)
+      }
+    } else {
+      localStorage.setItem('zenflow_daily_limit', JSON.stringify({ count: 0, date: today }))
+      setUsageCount(0)
+    }
+  }, [])
 
   // === Health check on mount ===
   useEffect(() => {
@@ -94,6 +121,12 @@ export default function Upload() {
       
       history.unshift(newHistoryItem) // prepend to the start
       localStorage.setItem('zenflow_result_history', JSON.stringify(history))
+      
+      // Update daily limit
+      const today = new Date().toISOString().split('T')[0]
+      const newCount = usageCount + 1
+      setUsageCount(newCount)
+      localStorage.setItem('zenflow_daily_limit', JSON.stringify({ count: newCount, date: today }))
       
     } catch (err: any) {
       if (err.name === 'AbortError') {
@@ -194,7 +227,8 @@ export default function Upload() {
 
             {/* File Uploader */}
             <div className="w-full animate-fade-rise-delay" style={{ marginTop: '0.5rem' }}>
-              <FileUploader onFileSelected={handleFileSelected} isUploading={isAnalyzing} />
+              <LimitBar count={usageCount} />
+              <FileUploader onFileSelected={handleFileSelected} isUploading={isAnalyzing} disabled={usageCount >= 2} />
             </div>
 
             {/* Error Display */}
