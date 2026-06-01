@@ -62,10 +62,10 @@ export default function Result() {
       <Navbar />
       <main
         className="relative z-10 flex flex-col animate-fade-rise page-enter"
-        style={{ minHeight: 'calc(100vh - 80px)', padding: '2rem 1.5rem', maxWidth: '800px', width: '100%', margin: '0 auto' }}
+        style={{ minHeight: 'calc(100vh - 80px)', padding: 'clamp(1rem, 3vw, 2rem) clamp(0.75rem, 3vw, 1.5rem)', maxWidth: '800px', width: '100%', margin: '0 auto' }}
       >
-        <div className="flex items-center justify-between mb-8" style={{ marginTop: '2rem' }}>
-          <h1 className="font-display" style={{ fontSize: '2.5rem', color: '#000000', margin: 0, letterSpacing: '-0.5px' }}>
+        <div className="flex items-center justify-between mb-8" style={{ marginTop: '2rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <h1 className="font-display" style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', color: '#000000', margin: 0, letterSpacing: '-0.5px' }}>
             Analysis History
           </h1>
           {history.length > 0 && (
@@ -128,7 +128,7 @@ export default function Result() {
         ) : (
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', 
             gap: '1.5rem',
             justifyContent: 'center',
             width: '100%'

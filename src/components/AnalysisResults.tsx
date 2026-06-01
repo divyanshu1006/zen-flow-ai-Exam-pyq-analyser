@@ -329,7 +329,7 @@ function ExpandedModal({ section, onClose }: {
           background: '#fff',
           borderRadius: '24px',
           width: '100%',
-          maxWidth: '900px',
+          maxWidth: 'min(900px, calc(100vw - 1.5rem))',
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
@@ -341,7 +341,7 @@ function ExpandedModal({ section, onClose }: {
         {/* Header */}
         <div style={{
           background: cfg.gradient,
-          padding: '1.25rem 1.75rem',
+          padding: 'clamp(0.875rem, 2vw, 1.25rem) clamp(1rem, 3vw, 1.75rem)',
           display: 'flex',
           alignItems: 'center',
           gap: '0.75rem',
@@ -400,7 +400,7 @@ function ExpandedModal({ section, onClose }: {
         <div
           className="markdown-content"
           style={{
-            padding: '1.5rem 2rem 2rem',
+            padding: 'clamp(1rem, 3vw, 1.5rem) clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2rem)',
             fontSize: '0.84rem',
             color: '#333',
             lineHeight: 1.7,
@@ -609,7 +609,7 @@ export default function AnalysisResults({ markdown, onReset }: AnalysisResultsPr
           {summary && (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
               gap: '0.75rem',
               marginBottom: '1.25rem',
               maxWidth: '900px',
@@ -646,7 +646,7 @@ export default function AnalysisResults({ markdown, onReset }: AnalysisResultsPr
           className="grid-board"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
             gap: '1.5rem',
             padding: '0.5rem clamp(1rem, 4vw, 2rem) 1.5rem',
             maxWidth: '1400px',
@@ -672,7 +672,7 @@ export default function AnalysisResults({ markdown, onReset }: AnalysisResultsPr
             boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
             border: '1px solid rgba(0,0,0,0.04)',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
             gap: '1.25rem',
           }}>
             {[

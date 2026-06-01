@@ -29,29 +29,6 @@ export default function LimitBar({ count }: LimitBarProps) {
 
   return (
     <div className="w-full max-w-2xl mx-auto mb-6 animate-fade-rise">
-      {/* Progress Bar Container */}
-      <div 
-        style={{
-          width: '100%',
-          height: '6px',
-          backgroundColor: '#E5E7EB',
-          borderRadius: '9999px',
-          overflow: 'hidden',
-          marginBottom: '0.75rem',
-        }}
-      >
-        {/* Animated Fill */}
-        <div 
-          style={{
-            height: '100%',
-            width: `${widthPercent}%`,
-            backgroundColor: barColor,
-            transition: 'width 0.5s ease-out, background-color 0.5s ease',
-            borderRadius: '9999px',
-          }}
-        />
-      </div>
-
       {/* Info Text Row */}
       <div className="flex items-center justify-between px-1">
         <p style={{ 

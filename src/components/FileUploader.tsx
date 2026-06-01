@@ -121,7 +121,7 @@ export default function FileUploader({ onFileSelected, isUploading, disabled = f
           border: `2px dashed ${isDragging ? '#000000' : fileError ? 'rgba(220, 38, 38, 0.3)' : 'rgba(0,0,0,0.15)'}`,
           backgroundColor: isDragging ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.6)',
           backdropFilter: 'blur(12px)',
-          padding: selectedFile ? '2rem' : '3.5rem 2rem',
+          padding: selectedFile ? 'clamp(1.25rem, 3vw, 2rem)' : 'clamp(2rem, 5vw, 3.5rem) clamp(1rem, 3vw, 2rem)',
         }}
       >
         <input
@@ -174,7 +174,7 @@ export default function FileUploader({ onFileSelected, isUploading, disabled = f
           </div>
         ) : (
           /* Selected File Display */
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between" style={{ gap: '0.75rem' }}>
             <div className="flex items-center gap-4">
               <div
                 className="flex items-center justify-center rounded-xl"
@@ -190,8 +190,8 @@ export default function FileUploader({ onFileSelected, isUploading, disabled = f
                   <polyline points="14 2 14 8 20 8" />
                 </svg>
               </div>
-              <div className="text-left">
-                <p className="text-sm font-medium text-black">{selectedFile.name}</p>
+              <div className="text-left" style={{ minWidth: 0, overflow: 'hidden' }}>
+                <p className="text-sm font-medium text-black" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedFile.name}</p>
                 <p className="text-xs" style={{ color: '#6F6F6F' }}>{formatSize(selectedFile.size)}</p>
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function FileUploader({ onFileSelected, isUploading, disabled = f
 
       {/* Analyze Button */}
       {selectedFile && (
-        <div className="flex justify-center animate-fade-rise" style={{ marginTop: '4rem', marginBottom: '3rem' }}>
+        <div className="flex justify-center animate-fade-rise" style={{ marginTop: 'clamp(2rem, 5vw, 4rem)', marginBottom: 'clamp(1.5rem, 4vw, 3rem)' }}>
           <button
             onClick={handleAnalyze}
             disabled={isUploading}

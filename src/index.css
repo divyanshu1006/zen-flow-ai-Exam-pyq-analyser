@@ -276,3 +276,54 @@ body {
   }
 }
 
+/* === Comprehensive Mobile Responsive Overrides === */
+@media (max-width: 640px) {
+  /* Grid board: single column on mobile */
+  .grid-board {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Grid cards: full width */
+  .grid-card {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Markdown tables: smaller font, better overflow */
+  .markdown-content table {
+    font-size: 0.68rem;
+  }
+
+  .markdown-content th,
+  .markdown-content td {
+    padding: 0.4rem 0.5rem;
+  }
+
+  /* Modal: full screen on mobile */
+  .modal-overlay {
+    padding: 0.5rem !important;
+  }
+
+  .modal-card {
+    border-radius: 16px !important;
+    max-height: 95vh !important;
+  }
+
+  .modal-card .modal-body {
+    padding: 1rem 1.25rem 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .markdown-content table {
+    font-size: 0.62rem;
+  }
+
+  .markdown-content th,
+  .markdown-content td {
+    padding: 0.3rem 0.4rem;
+  }
+}

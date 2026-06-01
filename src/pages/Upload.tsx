@@ -266,7 +266,7 @@ export default function Upload() {
             <div
               className="rounded-3xl"
               style={{
-                padding: '3rem 2.5rem',
+                padding: 'clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2.5rem)',
                 backgroundColor: 'rgba(255, 255, 255, 0.72)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
@@ -293,7 +293,7 @@ export default function Upload() {
 
                 {/* Message */}
                 <div style={{ textAlign: 'center' }}>
-                  <p className="font-display mb-2" style={{ fontSize: '1.75rem', color: '#000000', letterSpacing: '-0.5px' }}>
+                  <p className="font-display mb-2" style={{ fontSize: 'clamp(1.25rem, 4vw, 1.75rem)', color: '#000000', letterSpacing: '-0.5px' }}>
                     🤖 Analyzing your exam papers...
                   </p>
                   <p style={{ fontSize: '0.875rem', color: '#000000', fontFamily: "'Inter', sans-serif", opacity: 0.5 }}>
