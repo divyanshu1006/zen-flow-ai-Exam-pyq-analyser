@@ -41,15 +41,21 @@ export default function Upload() {
     }
   }, [])
 
-  // === Health check on mount ===
+  // === Health check on mount — retries every 10s until server is up ===
   useEffect(() => {
     let cancelled = false
     async function checkHealth() {
       try {
         const res = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(5000) })
-        if (!cancelled) setServerOnline(res.ok)
+        if (!cancelled) {
+          setServerOnline(res.ok)
+          if (!res.ok) setTimeout(checkHealth, 10000) // retry if still down
+        }
       } catch {
-        if (!cancelled) setServerOnline(false)
+        if (!cancelled) {
+          setServerOnline(false)
+          setTimeout(checkHealth, 10000) // retry every 10s while waking up
+        }
       }
     }
     checkHealth()
@@ -165,7 +171,7 @@ export default function Upload() {
       {/* Navigation */}
       <Navbar />
 
-      {/* Server Offline Banner */}
+      {/* Server Warming Up Banner */}
       {serverOnline === false && (
         <div
           className="relative z-20 mx-auto animate-fade-rise"
@@ -173,22 +179,27 @@ export default function Upload() {
             maxWidth: '600px',
             margin: '0 auto',
             padding: '0.875rem 1.5rem',
-            backgroundColor: 'rgba(220, 38, 38, 0.04)',
-            border: '1px solid rgba(220, 38, 38, 0.12)',
+            backgroundColor: 'rgba(234, 179, 8, 0.06)',
+            border: '1px solid rgba(234, 179, 8, 0.25)',
             borderRadius: '16px',
             textAlign: 'center',
             marginTop: '0.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
           }}
         >
-          <p style={{ fontSize: '0.8125rem', color: '#DC2626', margin: 0 }}>
-            <strong>⚠️ Server offline</strong> — The backend isn't reachable. Start it with{' '}
-            <code style={{
-              backgroundColor: 'rgba(220, 38, 38, 0.08)',
-              padding: '0.125rem 0.375rem',
-              borderRadius: '4px',
-              fontSize: '0.75rem',
-            }}>npm run server</code>{' '}
-            then refresh this page.
+          {/* Spinner */}
+          <svg
+            style={{ width: '14px', height: '14px', flexShrink: 0, animation: 'spin 1s linear infinite' }}
+            viewBox="0 0 24 24" fill="none"
+          >
+            <circle cx="12" cy="12" r="10" stroke="rgba(161,120,0,0.25)" strokeWidth="3" />
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="#A17800" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+          <p style={{ fontSize: '0.8125rem', color: '#92620A', margin: 0 }}>
+            <strong>Backend warming up</strong> — this takes ~30 seconds on first load. Checking automatically…
           </p>
         </div>
       )}
